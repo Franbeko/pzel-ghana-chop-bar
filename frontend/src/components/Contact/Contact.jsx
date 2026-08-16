@@ -35,7 +35,7 @@ const Contact = () => {
 
         setIsSending(true);
 
-        // ✅ Updated with your actual Formspree ID
+        // Updated with your actual Formspree ID
         const FORMSPREE_ID = 'mjybepjz'
 
         try {
@@ -139,7 +139,7 @@ const Contact = () => {
                                 <h3 className='ml-4 text-amber-100 text-xl font-semibold'>Email Address</h3>
                             </div>
                             <div className='pl-12 relative z-10'>
-                                <p className='text-amber-100 font-light text-lg'>info@pzeleats.com</p>
+                                <p className='text-amber-100 font-light text-lg'>pzelghanachopbar1@gmail.com</p>
                             </div>
                         </div>
                     </div>
