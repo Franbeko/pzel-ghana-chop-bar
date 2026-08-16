@@ -25,9 +25,8 @@ const Navbar = () => {
         Boolean(localStorage.getItem('loginData'))
     )
 
+    // ✅ FIXED: Only check authentication status, don't auto-open modal
     useEffect(() => {
-        // When login modal should show based on URL
-        setShowLoginModal(location.pathname === '/login');
         setIsAuthenticated(Boolean(localStorage.getItem('loginData')));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname])
