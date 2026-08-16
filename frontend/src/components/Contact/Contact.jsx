@@ -35,7 +35,8 @@ const Contact = () => {
 
         setIsSending(true);
 
-        const FORMSPREE_ID = 'YOUR_FORMSPREE_ID_HERE'
+        // ✅ Updated with your actual Formspree ID
+        const FORMSPREE_ID = 'mjybepjz'
 
         try {
             const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
