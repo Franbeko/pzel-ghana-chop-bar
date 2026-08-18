@@ -37,9 +37,9 @@ const Banner = () => {
 
                         <p className='text-lg md:text-lg lg:text-xl font-playfair italic sm:text-xl text-amber-100 max-w-xl 
                         opacity-90 mx-auto md:mx-0'>
-                            Serving authentic Ghanaian flavors made fresh daily. From our family to yours,
-                            we bring you the true taste of Ghana with love, care, and tradition.
-                            Eat in or takeaway - delicious meals await you!
+                            Welcome to P-ZEL Ghana Chop Bar - where every meal tastes like home. We serve authentic Ghanaian 
+                            dishes made with love, using traditional recipes passed down through generations. From our family 
+                            to yours, come experience the true taste of Ghana. Dine-in, takeout, and delivery available.
                         </p>
 
                         <form onSubmit={handleSearch} className='relative max-w-2xl mx-auto md:mx-0 group'>
