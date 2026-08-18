@@ -145,8 +145,8 @@ export const additionalData = [
 
 // FOOTER 
 export const socialIcons = [
-    { icon: FaFacebook, link: 'https://www.facebook.com/share/1DjbwhdR4z/', color: '#3b5998', label: 'Facebook' },
-    { icon: FaInstagram, link: 'https://www.instagram.com/hexagondigitalservices?igsh=MW1nanQ2eXIycnRkZQ==', color: '#E1306C', label: 'Instagram' },
+    { icon: FaFacebook, link: '#', color: '#3b5998', label: 'Facebook' },
+    { icon: FaInstagram, link: '#', color: '#E1306C', label: 'Instagram' },
 ];
 
 // LOGIN 
