@@ -29,8 +29,9 @@ const Footer = () => {
                             P-Zel Ghana Chop Bar
                         </h2>
                         <p className='text-amber-200/90 text-sm font-sacramento italic'>
-                            Serving authentic Ghanaian flavors made fresh daily. From our family to yours,
-                            we bring you the true taste of Ghana with love, care, and tradition delicious meals await you!
+                            Welcome to P-ZEL Ghana Chop Bar - where every meal tastes like home. We serve authentic Ghanaian 
+                            dishes made with love, using traditional recipes passed down through generations. From our family 
+                            to yours, come experience the true taste of Ghana. Dine-in, takeout, and delivery available.
                         </p>
 
                         <form onSubmit={handleSubmit} className='relative mt-4 group'>
