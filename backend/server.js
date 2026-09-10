@@ -57,10 +57,10 @@ const io = new Server(httpServer, {
 
 // SOCKET CONNECTION
 io.on('connection', (socket) => {
-    console.log('📡 Client connected:', socket.id)
+    console.log('Client connected:', socket.id)
     
     socket.on('disconnect', () => {
-        console.log('📡 Client disconnected:', socket.id)
+        console.log('Client disconnected:', socket.id)
     })
 })
 
@@ -69,6 +69,6 @@ app.set('io', io)
 
 // START SERVER WITH HTTP SERVER (NOT APP)
 httpServer.listen(port, () => {
-    console.log(`🚀 Server Started on http://localhost:${port}`)
-    console.log(`📡 WebSocket Server is ready`)
+    console.log(`Server Started on http://localhost:${port}`)
+    console.log(`WebSocket Server is ready`)
 })
