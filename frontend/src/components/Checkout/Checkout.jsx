@@ -213,10 +213,10 @@ const Checkout = () => {
                             <label className='block text-amber-300 text-sm mb-2'>Payment Method</label>
                             <select name='paymentMethod' value={formData.paymentMethod} onChange={handleChange}
                                 className='w-full px-4 py-2 rounded-lg bg-amber-900/30 border border-amber-600/30 text-amber-100 focus:outline-none focus:border-amber-500'>
-                                <option value="cod">💰 Cash on Delivery</option>
-                                <option value="pickup">📦 Payment on Pickup</option>
-                                <option value="mtn_money">📱 MTN Mobile Money</option>
-                                <option value="orange_money">📱 Orange Money</option>
+                                <option value="cod">Cash on Delivery</option>
+                                <option value="pickup">Payment on Pickup</option>
+                                <option value="mtn_money">MTN Mobile Money</option>
+                                <option value="orange_money">Orange Money</option>
                             </select>
                         </div>
 
@@ -230,7 +230,7 @@ const Checkout = () => {
                                         <p className='text-amber-200/80 text-sm'>
                                             For Mobile Money payments, please send payment to our business number after placing your order.
                                             <br />
-                                            <span className='text-amber-400 text-xs'>MTN: +231 886 811 113 | Orange: +231 775 121 332</span>
+                                            <span className='text-amber-400 text-xs'>MTN: 0880 146 713 | Orange: 0775 121 332 / 0779 752 054 / 0761 892 054</span>
                                         </p>
                                     </div>
                                 </div>

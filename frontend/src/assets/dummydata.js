@@ -1,16 +1,16 @@
 import { FaShippingFast, FaLeaf, FaHeart } from 'react-icons/fa';
 import { FaBolt, FaRegClock, FaCalendarCheck, FaFire } from 'react-icons/fa';
-import { FaFacebook, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
+import { FaFacebook, FaInstagram } from 'react-icons/fa6';
 import { FiUser, FiSmartphone, FiMail, FiHome } from 'react-icons/fi';
 import { FaUtensils } from 'react-icons/fa';
-import { GiChefToque, GiFoodTruck, GiFamilyHouse } from 'react-icons/gi';
+import { GiFamilyHouse } from 'react-icons/gi';
 import { FaSeedling, FaUsers, FaAward } from 'react-icons/fa';
-import IA1 from './IA1.png';
-import IA2 from './IA2.png';
-import IA3 from './IA3.png';
-import IA4 from './IA4.png';
-import IA5 from './IA5.png';
-import IA6 from './IA6.png';
+// import IA1 from './IA1.png';
+// import IA2 from './IA2.png';
+// import IA3 from './IA3.png';
+// import IA4 from './IA4.png';
+// import IA5 from './IA5.png';
+// import IA6 from './IA6.png';
 
 import Fufu from "./Fufu.jpg";
 import Banku from "./Banku.png";
@@ -80,45 +80,45 @@ export const stats = [
 
 // Team Members (kept for reference but not used in About page)
 export const teamMembers = [
-    {
-        name: "Marco Yansen",
-        role: "Executive Chef",
-        img: IA4,
-        bio: "3 Michelin stars | Italian cuisine specialist",
-        delay: 0.1,
-        social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
-        },
-    },
-    {
-        name: "Amit Singh",
-        role: "Pastry Chef",
-        img: IA5,
-        bio: "World Baking Champion | French desserts expert",
-        delay: 0.3,
-        social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
-        },
-    },
-    {
-        name: "Akash Trivedi",
-        role: "Sushi Chef",
-        img: IA6,
-        bio: "5th generation sushi chef | Traditional techniques",
-        delay: 0.5,
-        social: {
-            twitter: "https://x.com/?lang=en",
-            instagram: "https://www.instagram.com/",
-            facebook: "https://www.facebook.com/",
-            linkedin: "https://www.linkedin.com/",
-        },
-    },
+    // {
+    //     name: "Marco Yansen",
+    //     role: "Executive Chef",
+    //     img: IA4,
+    //     bio: "3 Michelin stars | Italian cuisine specialist",
+    //     delay: 0.1,
+    //     social: {
+    //         twitter: "https://x.com/?lang=en",
+    //         instagram: "https://www.instagram.com/",
+    //         facebook: "https://www.facebook.com/",
+    //         linkedin: "https://www.linkedin.com/",
+    //     },
+    // },
+    // {
+    //     name: "Amit Singh",
+    //     role: "Pastry Chef",
+    //     img: IA5,
+    //     bio: "World Baking Champion | French desserts expert",
+    //     delay: 0.3,
+    //     social: {
+    //         twitter: "https://x.com/?lang=en",
+    //         instagram: "https://www.instagram.com/",
+    //         facebook: "https://www.facebook.com/",
+    //         linkedin: "https://www.linkedin.com/",
+    //     },
+    // },
+    // {
+    //     name: "Akash Trivedi",
+    //     role: "Sushi Chef",
+    //     img: IA6,
+    //     bio: "5th generation sushi chef | Traditional techniques",
+    //     delay: 0.5,
+    //     social: {
+    //         twitter: "https://x.com/?lang=en",
+    //         instagram: "https://www.instagram.com/",
+    //         facebook: "https://www.facebook.com/",
+    //         linkedin: "https://www.linkedin.com/",
+    //     },
+    // },
 ];
 
 // ABOUT HOMEPAGE
@@ -131,10 +131,10 @@ export const aboutfeature = [
 
 // SPECIAL MENU
 export const cardData = [
-    { id: 1, title: 'Fufu & Light Soup', rating: 4.5, hearts: 105, description: 'Pounded cassava served with spicy light soup and goat meat.', image: Fufu, popular: true, price: 'LRD40' },
-    { id: 2, title: 'Banku & Okro Soup', rating: 5.0, hearts: 155, description: 'Fermented corn dough served with fresh okro soup.', image: Banku, bestseller: true, price: 'LRD140' },
-    { id: 3, title: 'Light Soup & Rice Balls', rating: 4.2, hearts: 85, description: 'Spicy tomato-based soup with tender meat.', image: RiceBalls, price: 'LRD60' },
-    { id: 4, title: 'Banku & Tilapia', rating: 4.8, hearts: 285, description: 'Banku served with spicy pepper and grilled tilapia.', image: Banku2, special: true, price: 'LRD200' },
+    { id: 1, title: 'Fufu & Light Soup', rating: 4.5, hearts: 105, description: 'Pounded cassava served with spicy light soup and goat meat.', image: Fufu, popular: true, price: 'LRD 40' },
+    { id: 2, title: 'Banku & Okro Soup', rating: 5.0, hearts: 155, description: 'Fermented corn dough served with fresh okro soup.', image: Banku, bestseller: true, price: 'LRD 140' },
+    { id: 3, title: 'Light Soup & Rice Balls', rating: 4.2, hearts: 85, description: 'Spicy tomato-based soup with tender meat.', image: RiceBalls, price: 'LRD 60' },
+    { id: 4, title: 'Banku & Tilapia', rating: 4.8, hearts: 285, description: 'Banku served with spicy pepper and grilled tilapia.', image: Banku2, special: true, price: 'LRD 200' },
 ];
 export const additionalData = [
     { id: 5, title: 'Paneer Tikka', rating: 4.8, hearts: 210, description: 'Cottage cheese marinated in spices', image: PaneerTikka, popular: true, price: '₹220' },

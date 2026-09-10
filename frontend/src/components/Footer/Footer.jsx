@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { FaRegEnvelope, FaPhone, FaMapMarkerAlt, FaClock } from 'react-icons/fa'
+import React from 'react'
+import { FaPhone, FaMapMarkerAlt, FaClock, FaWhatsapp } from 'react-icons/fa'
 import { BiChevronRight } from 'react-icons/bi'
 import { socialIcons } from '../../assets/dummydata'
 
@@ -11,19 +11,11 @@ const navItems = [
 ];
 
 const Footer = () => {
-
-    const [email, setEmail] = useState('');
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        alert(`Thanks for subscribing! We'll send updates to ${email}`);
-        setEmail('');
-    }
-
     return (
         <footer className='bg-[#2A211C] text-amber-100 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden'>
             <div className='max-w-7xl mx-auto relative z-10'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12'>
-                    {/* Left Column - Brand & Newsletter */}
+                    {/* Left Column - Brand */}
                     <div className='space-y-6'>
                         <h2 className='text-4xl sm:text-5xl md:text-5xl font-bold font-sacramento text-amber-400 animate-pulse'>
                             P-Zel Ghana Chop Bar
@@ -33,33 +25,6 @@ const Footer = () => {
                             dishes made with love, using traditional recipes passed down through generations. From our family 
                             to yours, come experience the true taste of Ghana. Dine-in, takeout, and delivery available.
                         </p>
-
-                        <form onSubmit={handleSubmit} className='relative mt-4 group'>
-                            <div className='flex items-center gap-2 mb-2'>
-                                <FaRegEnvelope className='text-amber-400 animate-pulse' />
-                                <span className='font-bold text-amber-400'>Get Exclusive Offers</span>
-                            </div>
-
-                            <div className='relative'>
-                                <input 
-                                    type="email" 
-                                    placeholder='Enter your email...' 
-                                    value={email} 
-                                    onChange={e => setEmail(e.target.value)}
-                                    className='w-full px-4 py-2.5 rounded-lg bg-amber-50/5 border-2 border-amber-400/30 focus:outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-400/20 transition-all duration-300 placeholder-amber-200/50'
-                                    required 
-                                />
-                                <button 
-                                    type='submit' 
-                                    className='absolute right-1 top-1 bg-gradient-to-br from-amber-300 via-amber-500 to-amber-600 text-white px-4 py-2 rounded-full flex items-center gap-1.5 shadow-lg hover:shadow-amber-400/30 overflow-hidden transition-all duration-500 group'
-                                >
-                                    <span className='font-bold text-sm tracking-wide transition-transform duration-300 group-hover:-translate-x-1'>
-                                        Join Now
-                                    </span>
-                                    <BiChevronRight className='text-xl transition-transform duration-300 group-hover:translate-x-1 flex-shrink-0' />
-                                </button>
-                            </div>
-                        </form>
                     </div>
 
                     {/* Column 2 - Quick Links */}
@@ -100,7 +65,19 @@ const Footer = () => {
                             </div>
                             <div className='flex items-center gap-3'>
                                 <FaPhone className='text-amber-400 flex-shrink-0' />
-                                <span className='text-amber-200/80 text-sm'>+231 775 121 332</span>
+                                <span className='text-amber-200/80 text-sm'>0880146713 / 0779752054 / 0761892054</span>
+                            </div>
+                            {/* WhatsApp */}
+                            <div className='flex items-center gap-3'>
+                                <FaWhatsapp className='text-amber-400 flex-shrink-0' />
+                                <a
+                                    href='https://wa.me/231775121332'
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='text-amber-200/80 text-sm hover:text-amber-400 hover:underline transition-colors'
+                                >
+                                    Chat with us on WhatsApp
+                                </a>
                             </div>
                         </div>
                     </div>

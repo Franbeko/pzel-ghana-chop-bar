@@ -119,12 +119,12 @@ const Contact = () => {
                                 <div className='p-3 bg-gradient-to-br from-green-500/30 to-green-700/30 rounded-xl'>
                                     <FiPhone className='text-green-400 text-2xl animate-pulse' />
                                 </div>
-                                <h3 className='ml-4 text-amber-100 text-xl font-semibold'>Contact Number</h3>
+                                <h3 className='ml-4 text-amber-100 text-xl font-semibold'>Contact Numbers</h3>
                             </div>
                             <div className='pl-12 relative space-y-2 z-10'>
                                 <p className='text-amber-100 font-light flex items-center gap-2'>
                                     <FiGlobe className='text-green-400 text-xl' />
-                                    +231 775 121 332
+                                    0775 121 332 / 0880 146 713 / 0779 752 054 / 0761 892 054
                                 </p>
                             </div>
                         </div>
