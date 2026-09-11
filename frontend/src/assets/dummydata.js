@@ -130,8 +130,8 @@ export const additionalData = [
 
 // FOOTER 
 export const socialIcons = [
-    { icon: FaFacebook, link: '#', color: '#3b5998', label: 'Facebook' },
-    { icon: FaInstagram, link: '#', color: '#E1306C', label: 'Instagram' },
+    { icon: FaFacebook, link: 'https://www.facebook.com/share/r/19Ji5D6fdn/', color: '#3b5998', label: 'Facebook' },
+    // { icon: FaInstagram, link: '#', color: '#E1306C', label: 'Instagram' },
 ];
 
 // LOGIN 
