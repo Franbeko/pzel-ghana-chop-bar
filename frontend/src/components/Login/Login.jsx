@@ -4,7 +4,9 @@ import { iconClass, inputBase } from '../../assets/dummydata';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const url = 'http://localhost:4000'
+// Use env variable (falls back to localhost for dev safety)
+const url = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const adminUrl = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
 
 const Login = ({ onLoginSuccess, onClose, isOpen }) => {
 
@@ -16,12 +18,9 @@ const Login = ({ onLoginSuccess, onClose, isOpen }) => {
     // Clear stale auth data when modal opens
     useEffect(() => {
         if (isOpen) {
-            // Clear any stale auth data when login modal opens
-            // This ensures admin logout works properly
             const token = localStorage.getItem('authToken');
             const isAdmin = localStorage.getItem('isAdmin');
-            
-            // If there's stale admin data but no valid session, clear it
+
             if (isAdmin === 'true' && !token) {
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('isAdmin');
@@ -46,7 +45,7 @@ const Login = ({ onLoginSuccess, onClose, isOpen }) => {
                 email: formData.username,
                 password: formData.password,
             });
-            
+
             console.log('Axios Res:', res);
 
             if (res.status === 200 && res.data.success && res.data.token) {
@@ -64,12 +63,13 @@ const Login = ({ onLoginSuccess, onClose, isOpen }) => {
                 }
 
                 setShowToast({ visible: true, message: 'Login Successful!', isError: false });
-                
+
                 setTimeout(() => {
                     setShowToast({ visible: false, message: '', isError: false });
-                    
+
+                    // Use env-based admin URL
                     if (res.data.isAdmin) {
-                        window.location.href = 'http://localhost:5174';
+                        window.location.href = adminUrl;
                     } else {
                         if (onLoginSuccess) {
                             onLoginSuccess(res.data.token);
@@ -117,25 +117,25 @@ const Login = ({ onLoginSuccess, onClose, isOpen }) => {
             <form onSubmit={handleSubmit} className='space-y-6'>
                 <div className='relative'>
                     <FaUser className={iconClass} />
-                    <input 
-                        type="text" 
-                        name='username' 
-                        placeholder='Username or Email' 
-                        value={formData.username} 
-                        onChange={handleChange} 
-                        className={`${inputBase} pl-10 pr-4 py-3`} 
+                    <input
+                        type="text"
+                        name='username'
+                        placeholder='Username or Email'
+                        value={formData.username}
+                        onChange={handleChange}
+                        className={`${inputBase} pl-10 pr-4 py-3`}
                         required
                     />
                 </div>
                 <div className='relative'>
                     <FaLock className={iconClass} />
-                    <input 
-                        type={showPassword ? 'text' : 'password'} 
-                        name='password' 
-                        placeholder='Password' 
-                        value={formData.password} 
-                        onChange={handleChange} 
-                        className={`${inputBase} pl-10 pr-10 py-3`} 
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        name='password'
+                        placeholder='Password'
+                        value={formData.password}
+                        onChange={handleChange}
+                        className={`${inputBase} pl-10 pr-10 py-3`}
                         required
                     />
                     <button type='button' onClick={toggleShowPassword} className='absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400'>
@@ -145,19 +145,19 @@ const Login = ({ onLoginSuccess, onClose, isOpen }) => {
 
                 <div className='flex items-center'>
                     <label className='flex items-center'>
-                        <input 
-                            type="checkbox" 
-                            name='rememberMe' 
-                            checked={formData.rememberMe} 
-                            onChange={handleChange} 
-                            className='form-checkbox h-5 w-5 text-amber-600 bg-[#2D1B0E] border-amber-400 rounded focus:ring-amber-600' 
+                        <input
+                            type="checkbox"
+                            name='rememberMe'
+                            checked={formData.rememberMe}
+                            onChange={handleChange}
+                            className='form-checkbox h-5 w-5 text-amber-600 bg-[#2D1B0E] border-amber-400 rounded focus:ring-amber-600'
                         />
                         <span className='ml-2 text-amber-100'>Remember Me</span>
                     </label>
                 </div>
 
-                <button 
-                    type='submit' 
+                <button
+                    type='submit'
                     disabled={isLoading}
                     className='w-full py-3 bg-gradient-to-r from-amber-400 to-amber-600 text-[#2D1B0E] font-bold rounded-lg flex items-center justify-center gap-2 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed'
                 >

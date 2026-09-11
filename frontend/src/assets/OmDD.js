@@ -23,7 +23,8 @@ import DumboywithFish from "./Menu2.jpg"
 import RiceBall from "./Menu6.jpg"
 import Konkonte from "./Menu5.jpg"
 import DumboywithCow from "./Menu1.jpg"
-import GranolaParfait from "./GranolaParfait.png"
+import FriedRice from "./Menu9.jpg"
+import TZ from "./Menu10.jpg"
 
 
 export const dummyMenuData = {
@@ -84,18 +85,40 @@ export const dummyMenuData = {
       options: ['Goat', 'Cow'],
       eatIn: 'L$1,700',
       takeaway: 'L$1,900'
+    },
+    {
+      id: 'sunday-3',
+      name: 'Ghanaian style of fried rice with (Grilled fish or chicken)',
+      priceLRD: '1500',
+      priceUSD: '8.60',
+      image: FriedRice,
+      description: 'Fragrant Ghanaian fried rice served with grilled fish or chicken. A satisfying favorite.',
+      options: ['Grilled Fish', 'Grilled Chicken'],
+      eatIn: 'L$1,500',
+      takeaway: 'L$1,900'
+    },
+    {
+      id: 'sunday-4',
+      name: 'TZ (Tuo Zaafi)',
+      priceLRD: '1500',
+      priceUSD: '8.60',
+      image: TZ,
+      description: 'Smooth tuo zaafi served with green leaf soup and tender cow or goat meat. A hearty Sunday favorite.',
+      options: ['Chicken', 'Fish'],
+      eatIn: 'L$1,500',
+      takeaway: 'L$1,900'
     }
   ],
   "Rice Dishes": [
     {
       id: 'rice-1',
-      name: 'Ghanaian Fried Rice',
-      priceLRD: '1900',
-      priceUSD: '9.50',
-      image: GranolaParfait,
-      description: 'Ghanaian-style fried rice with your choice of grilled fish or chicken.',
+      name: 'Ghanaian style of fried rice with (Grilled fish or chicken)',
+      priceLRD: '1500',
+      priceUSD: '8.60',
+      image: FriedRice,
+      description: 'Fragrant Ghanaian fried rice served with grilled fish or chicken. A satisfying favorite.',
       options: ['Grilled Fish', 'Grilled Chicken'],
-      eatIn: 'L$1,700',
+      eatIn: 'L$1,500',
       takeaway: 'L$1,900'
     }
   ],

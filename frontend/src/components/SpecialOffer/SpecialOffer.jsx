@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react'
-// import { additionalData, cardData } from '../../assets/dummydata';
 import { useCart } from '../../CartContext/CartContext';
 import { FaHeart, FaPlus, FaStar, FaUtensils } from 'react-icons/fa';
 import { HiMinus, HiPlus } from "react-icons/hi";
@@ -7,38 +6,39 @@ import FloatingParticle from '../FloatingParticle/FloatingParticle';
 import axios from 'axios';
 import io from 'socket.io-client';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const SpecialOffer = () => {
 
     const [showAll, setShowAll] = useState(false);
     const [items, setItems] = useState([]);
     const { addToCart, updateQuantity, removeFromCart, cartItems } = useCart();
 
-    // ✅ Wrap fetchItems in useCallback to prevent unnecessary re-renders
     const fetchItems = useCallback(async () => {
         try {
-            const res = await axios.get('http://localhost:4000/api/items');
+            const res = await axios.get(`${API_URL}/api/items`);
             setItems(res.data.items ?? res.data);
         } catch (err) {
             console.error('Error fetching items:', err);
         }
     }, []);
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        fetchItems();
+        useEffect(() => {
+        //Await inside effect so linter sees async behavior
+        const loadItems = async () => {
+            await fetchItems();
+        };
+        loadItems();
 
-        // ✅ Connect to WebSocket for real-time menu updates
-        const socket = io('http://localhost:4000', {
+        const socket = io(API_URL, {
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
         });
 
-        // Listen for menu updates
         socket.on('menuUpdated', (newItem) => {
-            console.log('📡 New menu item added via WebSocket:', newItem);
+            console.log('New menu item added via WebSocket:', newItem);
             setItems(prevItems => {
-                // Check if item already exists
                 const exists = prevItems.some(item => item._id === newItem._id);
                 if (exists) {
                     return prevItems.map(item => 
@@ -50,13 +50,13 @@ const SpecialOffer = () => {
         });
 
         socket.on('connect', () => {
-            console.log('📡 SpecialOffer WebSocket connected');
+            console.log('SpecialOffer WebSocket connected');
         });
 
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [fetchItems]);
 
     const displayList = Array.isArray(items) ? items.slice(0, showAll ? 8 : 4) : [];
 
@@ -64,7 +64,6 @@ const SpecialOffer = () => {
     const addButtonHover = "hover:from-amber-400 hover:to-amber-500 hover:scale-105 hover:shadow-lg hover:shadow-amber-500/30";
     const commonTransition = "transform transition-all duration-300";
 
-    // Helper function to get price
     const getItemPrice = (item) => {
         const price = item.priceLRD || item.price || 0;
         const usdPrice = item.priceUSD || (price / 185).toFixed(2);
@@ -84,7 +83,6 @@ const SpecialOffer = () => {
                     </p>
                 </div>
 
-                {/* Product Card */}
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
                     {displayList.map(item => {
                         const cartItem = cartItems.find(ci => ci.item?._id === item._id);

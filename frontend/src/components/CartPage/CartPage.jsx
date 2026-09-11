@@ -3,26 +3,23 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../../CartContext/CartContext'
 import { FaMinus, FaPlus, FaTimes, FaTrash } from "react-icons/fa";
 
-const API_URL = 'http://localhost:4000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
 
 const CartPage = () => {
 
     const { cartItems, removeFromCart, updateQuantity, totalAmount } = useCart();
     const [selectedImage, setSelectedImage] = useState(null);
 
-    // FOR IMAGE URL
     const buildImageUrl = (path) => {
         if (!path) return '';
         return path.startsWith('http') ? path : `${API_URL}${path}`;
     }
 
-    // Helper function to convert LRD to USD (using exchange rate: 1 USD = 185 LRD)
     const convertToUSD = (lrdPrice) => {
         const usdPrice = (lrdPrice / 185).toFixed(2);
         return usdPrice;
     };
 
-    // Get price from cart item (handles both price and priceLRD)
     const getItemPrice = (item) => {
         const price = item?.priceLRD || item?.price || 0;
         return Number(price);

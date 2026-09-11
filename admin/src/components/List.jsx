@@ -49,6 +49,17 @@ const List = () => {
     ))
   }
 
+  // ✅ NEW: Safe getter for categories (handles old `category` field too)
+  const getCategories = (item) => {
+    if (Array.isArray(item.categories) && item.categories.length > 0) {
+      return item.categories;
+    }
+    if (item.category) {
+      return [item.category]; // backwards compat with old data
+    }
+    return [];
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a120b] via-[#2a1e14] to-[#3e2b1d] flex items-center justify-center">
@@ -78,47 +89,64 @@ const List = () => {
               </thead>
 
               <tbody>
-                {items.map(item => (
-                  <tr key={item._id} className={styles.tr}>
-                    <td className={styles.imgCell}>
-                      <img 
-                        src={item.imageUrl} 
-                        alt={item.name}
-                        className={styles.img}
-                        onError={(e) => {
-                          console.log('Failed to load:', item.imageUrl);
-                          e.target.src = 'https://via.placeholder.com/100x100?text=No+Image';
-                        }}
-                      />
-                    </td>
-                    <td className={styles.nameCell}>
-                      <div className="space-y-1">
-                        <p className={styles.nameText}>{item.name}</p>
-                        <p className={styles.descText}>{item.description}</p>
-                      </div>
-                    </td>
-                    <td className={styles.categoryCell}>
-                      {item.category}
-                    </td>
-                    <td className={styles.priceCell}>LRD {item.priceLRD || item.price}</td>
-                    <td className={styles.ratingCell}>
-                      <div className="flex gap-1">
-                        {renderStars(item.rating)}
-                      </div>
-                    </td>
-                    <td className={styles.heartsCell}>
-                      <div className={styles.heartsWrapper}>
-                        <FiHeart className="text-xl" />
-                        <span>{item.hearts}</span>
-                      </div>
-                    </td>
-                    <td className="p-4 text-center">
-                      <button onClick={() => handleDelete(item._id)} className={styles.deleteBtn}>
-                        <FiTrash2 className="text-2xl" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {items.map(item => {
+                  const cats = getCategories(item);
+                  return (
+                    <tr key={item._id} className={styles.tr}>
+                      <td className={styles.imgCell}>
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name}
+                          className={styles.img}
+                          onError={(e) => {
+                            console.log('Failed to load:', item.imageUrl);
+                            e.target.src = 'https://via.placeholder.com/100x100?text=No+Image';
+                          }}
+                        />
+                      </td>
+                      <td className={styles.nameCell}>
+                        <div className="space-y-1">
+                          <p className={styles.nameText}>{item.name}</p>
+                          <p className={styles.descText}>{item.description}</p>
+                        </div>
+                      </td>
+                      <td className={styles.categoryCell}>
+                        {cats.length === 0 ? (
+                          <span className="text-amber-100/40 italic">No category</span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5 justify-center">
+                            {cats.map((cat, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-block px-2 py-0.5 rounded-full text-xs font-medium
+                                bg-amber-500/20 text-amber-200 border border-amber-500/30 whitespace-nowrap"
+                              >
+                                {cat}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td className={styles.priceCell}>LRD {item.priceLRD || item.price}</td>
+                      <td className={styles.ratingCell}>
+                        <div className="flex gap-1">
+                          {renderStars(item.rating)}
+                        </div>
+                      </td>
+                      <td className={styles.heartsCell}>
+                        <div className={styles.heartsWrapper}>
+                          <FiHeart className="text-xl" />
+                          <span>{item.hearts}</span>
+                        </div>
+                      </td>
+                      <td className="p-4 text-center">
+                        <button onClick={() => handleDelete(item._id)} className={styles.deleteBtn}>
+                          <FiTrash2 className="text-2xl" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

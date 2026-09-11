@@ -3,9 +3,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react'
 import axios from 'axios'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const CartContext = createContext();
 
-// Reducer Handling Cart Actions Like Add, Remove, Update Quantity, And Item
 const cartReducer = (state, action) => {
     switch (action.type) {
         case 'HYDRATE_CART':
@@ -37,7 +38,6 @@ const cartReducer = (state, action) => {
     }
 }
 
-// Initial Cart From LocalStorage
 const initializer = () => {
     try {
         return JSON.parse(localStorage.getItem('cart') || '[]');
@@ -51,15 +51,13 @@ export const CartProvider = ({ children }) => {
 
     const [cartItems, dispatch] = useReducer(cartReducer, [], initializer);
 
-    // Persist Cart State To LocalStorage
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // HYDRATE FROM SERVER API
     useEffect(() => {
         const token = localStorage.getItem('authToken')
-        axios.get('http://localhost:4000/api/cart', {
+        axios.get(`${API_URL}/api/cart`, {
             withCredentials: true,
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -67,26 +65,22 @@ export const CartProvider = ({ children }) => {
             .catch(err => { if (err.response?.status !== 401) console.error(err) })
     }, [])
 
-    // Calculate total amount correctly
     const totalAmount = cartItems.reduce((sum, cartItem) => {
         const price = cartItem.item?.priceLRD || cartItem.item?.price || 0;
         const qty = cartItem.quantity || 0;
         return sum + (Number(price) * Number(qty));
     }, 0);
 
-    // Calculate total items count (for cart badge)
     const totalItemsCount = cartItems.reduce((sum, cartItem) => {
         return sum + (cartItem.quantity || 0);
     }, 0);
 
-    // Alias for backward compatibility
     const totalItems = totalItemsCount;
 
-    // Dispatcher Wrapped With CallBack For Performance
     const addToCart = useCallback(async (item, qty) => {
         const token = localStorage.getItem('authToken')
         const res = await axios.post(
-            'http://localhost:4000/api/cart',
+            `${API_URL}/api/cart`,
             { itemId: item._id, quantity: qty },
             {
                 withCredentials: true,
@@ -99,7 +93,7 @@ export const CartProvider = ({ children }) => {
     const removeFromCart = useCallback(async (_id) => {
         const token = localStorage.getItem('authToken')
         await axios.delete(
-            `http://localhost:4000/api/cart/${_id}`,
+            `${API_URL}/api/cart/${_id}`,
             {
                 withCredentials: true,
                 headers: { Authorization: `Bearer ${token}` }
@@ -111,7 +105,7 @@ export const CartProvider = ({ children }) => {
     const updateQuantity = useCallback(async (_id, qty) => {
         const token = localStorage.getItem('authToken')
         const res = await axios.put(
-            `http://localhost:4000/api/cart/${_id}`,
+            `${API_URL}/api/cart/${_id}`,
             { quantity: qty },
             {
                 withCredentials: true,
@@ -124,7 +118,7 @@ export const CartProvider = ({ children }) => {
     const clearCart = useCallback(async () => {
         const token = localStorage.getItem('authToken')
         await axios.post(
-            'http://localhost:4000/api/cart/clear',
+            `${API_URL}/api/cart/clear`,
             {},
             {
                 withCredentials: true,

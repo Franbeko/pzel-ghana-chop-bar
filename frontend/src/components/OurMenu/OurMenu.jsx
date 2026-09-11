@@ -6,6 +6,8 @@ import './OurMenu.css'
 import axios from 'axios';
 import io from 'socket.io-client';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const categories = ['Daily Specials (Mon-Sat)', 'Sunday Specials', 'Rice Dishes', 'Drinks'];
 
 const OurMenu = () => {
@@ -16,77 +18,82 @@ const OurMenu = () => {
     const [allItems, setAllItems] = useState([]);
     const location = useLocation();
 
-    // Get search query from URL
     const searchParams = new URLSearchParams(location.search);
     const searchQuery = searchParams.get('search') || '';
 
-    // Wrap fetchMenu in useCallback
-    const fetchMenu = useCallback(async () => {
-        try {
-            const res = await axios.get('http://localhost:4000/api/items');
-            setAllItems(res.data);
-            const byCategory = res.data.reduce((acc, item) => {
-                const cat = item.category || 'Uncategorized';
+    const groupByCategories = (items) => {
+        return items.reduce((acc, item) => {
+            const cats = Array.isArray(item.categories) && item.categories.length
+                ? item.categories
+                : (item.category ? [item.category] : ['Uncategorized']);
+            cats.forEach(cat => {
                 acc[cat] = acc[cat] || [];
                 acc[cat].push(item);
-                return acc;
-            }, {});
-            setMenuData(byCategory);
+            });
+            return acc;
+        }, {});
+    };
+
+    const fetchMenu = useCallback(async () => {
+        try {
+            const res = await axios.get(`${API_URL}/api/items`);
+            setAllItems(res.data);
+            setMenuData(groupByCategories(res.data));
         } catch (err) {
             console.error('Error fetching menu data:', err);
         }
     }, []);
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        fetchMenu();
+        useEffect(() => {
+        // Await inside effect so linter sees async behavior
+        const loadMenu = async () => {
+            await fetchMenu();
+        };
+        loadMenu();
 
-        // Connect to WebSocket for real-time menu updates
-        const socket = io('http://localhost:4000', {
+        const socket = io(API_URL, {
             reconnection: true,
             reconnectionAttempts: 5,
         });
 
         socket.on('menuUpdated', (newItem) => {
             console.log('📡 Menu item added via WebSocket (OurMenu):', newItem);
-            // Update both allItems and menuData
             setAllItems(prev => [newItem, ...prev]);
             setMenuData(prevData => {
-                const category = newItem.category || 'Uncategorized';
-                const updatedCategory = [...(prevData[category] || []), newItem];
-                return { ...prevData, [category]: updatedCategory };
+                const cats = Array.isArray(newItem.categories) && newItem.categories.length
+                    ? newItem.categories
+                    : (newItem.category ? [newItem.category] : ['Uncategorized']);
+                const updated = { ...prevData };
+                cats.forEach(cat => {
+                    updated[cat] = [...(updated[cat] || []), newItem];
+                });
+                return updated;
             });
         });
 
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [fetchMenu]);
 
-    // USE ID TO FIND AND UPDATE
     const getCartEntry = id => cartItems.find(ci => ci.item?._id === id);
 
-    // Filter items based on search query
     const filteredItems = useMemo(() => {
         if (!searchQuery) {
             return { ...menuData };
         }
         
         const lowerQuery = searchQuery.toLowerCase();
-        const searchResults = allItems.filter(item => 
-            item.name?.toLowerCase().includes(lowerQuery) ||
-            item.description?.toLowerCase().includes(lowerQuery) ||
-            item.category?.toLowerCase().includes(lowerQuery)
-        );
+        const searchResults = allItems.filter(item => {
+            const cats = Array.isArray(item.categories) ? item.categories.join(' ') : (item.category || '');
+            return (
+                item.name?.toLowerCase().includes(lowerQuery) ||
+                item.description?.toLowerCase().includes(lowerQuery) ||
+                cats.toLowerCase().includes(lowerQuery)
+            );
+        });
         
-        const groupedResults = searchResults.reduce((acc, item) => {
-            const cat = item.category || 'Uncategorized';
-            acc[cat] = acc[cat] || [];
-            acc[cat].push(item);
-            return acc;
-        }, {});
-        
-        return groupedResults;
+        return groupByCategories(searchResults);
     }, [menuData, allItems, searchQuery]);
 
     const displayItems = useMemo(() => {

@@ -4,6 +4,8 @@ import axios from "axios";
 import { FiBox, FiUser, FiCheckCircle, FiClock } from "react-icons/fi";
 import io from 'socket.io-client';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const Order = () => {
 
   const [orders, setOrders] = useState([])
@@ -12,11 +14,10 @@ const Order = () => {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
 
-  // Fetch orders function
   const fetchOrders = async () => {
     try {
       console.log('Fetching orders...');
-      const response = await axios.get('/api/orders/getall');
+      const response = await axios.get(`${API_URL}/api/orders/getall`);
       
       console.log('API Response:', response.data);
       
@@ -61,30 +62,25 @@ const Order = () => {
     }
   };
 
-  // WebSocket connection and auto-refresh
   useEffect(() => {
     let socket = null;
 
-    // Initial fetch
     const loadOrders = async () => {
       await fetchOrders();
     };
     loadOrders();
 
-    // Connect to Socket.io for real-time updates
     try {
-      socket = io('http://localhost:4000', {
+      socket = io(API_URL, {
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         transports: ['websocket', 'polling'],
       });
 
-      // Listen for order updates - FIXED with proper formatting
       socket.on('orderUpdated', (updatedOrder) => {
         console.log('📡 Order updated via WebSocket (Admin):', updatedOrder);
         
-        // Format the incoming order to match your state structure
         const formattedOrder = {
           ...updatedOrder,
           address: updatedOrder.address ?? updatedOrder.shippingAddress?.address ?? '',
@@ -105,35 +101,28 @@ const Order = () => {
           }),
         };
         
-        // Update the orders list
         setOrders(prevOrders => {
-          // Check if order exists in current list
           const exists = prevOrders.some(order => order._id === formattedOrder._id);
           
           if (exists) {
-            // Update existing order
             return prevOrders.map(order => 
               order._id === formattedOrder._id ? formattedOrder : order
             );
           } else {
-            // New order - add to list and sort by createdAt
             const newOrders = [formattedOrder, ...prevOrders];
             return newOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           }
         });
       });
 
-      // Connect event
       socket.on('connect', () => {
         console.log('📡 Admin WebSocket connected:', socket.id);
       });
 
-      // Disconnect event
       socket.on('disconnect', () => {
         console.log('📡 Admin WebSocket disconnected');
       });
 
-      // Error event
       socket.on('connect_error', (err) => {
         console.log('📡 WebSocket connection error:', err.message);
       });
@@ -142,7 +131,6 @@ const Order = () => {
       console.log('WebSocket error:', err);
     }
 
-    // Cleanup on unmount
     return () => {
       if (socket) {
         socket.disconnect();
@@ -152,8 +140,7 @@ const Order = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(`/api/orders/getall/${orderId}`, { status: newStatus });
-      // WebSocket will automatically update the UI
+      await axios.put(`${API_URL}/api/orders/getall/${orderId}`, { status: newStatus });
       if (selectedOrder && selectedOrder._id === orderId) {
         setSelectedOrder({...selectedOrder, status: newStatus})
       }
@@ -165,8 +152,7 @@ const Order = () => {
 
   const handleConfirmPayment = async (orderId) => {
     try {
-      await axios.put(`/api/orders/confirm-payment/${orderId}`);
-      // WebSocket will automatically update the UI
+      await axios.put(`${API_URL}/api/orders/confirm-payment/${orderId}`);
       if (selectedOrder && selectedOrder._id === orderId) {
         setSelectedOrder({...selectedOrder, paymentStatus: 'completed'})
       }
@@ -186,6 +172,12 @@ const Order = () => {
     setShowDetails(false)
     setSelectedOrder(null)
   }
+
+  // ✅ Helper for image URL
+  const buildImageUrl = (imageUrl) => {
+    if (!imageUrl) return '';
+    return imageUrl.startsWith('http') ? imageUrl : `${API_URL}${imageUrl}`;
+  };
 
   if (loading) return (
     <div className={layoutClasses.page + ' flex items-center justify-center'}>
@@ -265,7 +257,7 @@ const Order = () => {
                       <td className={tableClasses.cellBase}>
                         <div className="space-y-1 max-h-52 overflow-auto">
                           {order.items?.map((itm, idx) => {
-                            const imageUrl = itm.item?.imageUrl ? `http://localhost:4000${itm.item.imageUrl}` : '';
+                            const imageUrl = buildImageUrl(itm.item?.imageUrl);
                             return (
                               <div key={idx} className="flex items-center gap-3 p-2 rounded-lg">
                                 {imageUrl ? (
@@ -367,7 +359,6 @@ const Order = () => {
         </div>
       </div>
 
-      {/* Order Details Modal */}
       {showDetails && selectedOrder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={closeDetails}>
           <div className="bg-[#3c2a21] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-auto" onClick={e => e.stopPropagation()}>
@@ -377,7 +368,6 @@ const Order = () => {
             </div>
             
             <div className="p-6 space-y-4">
-              {/* Order Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-amber-400 text-sm">Order ID</p>
@@ -389,7 +379,6 @@ const Order = () => {
                 </div>
               </div>
 
-              {/* Customer Info */}
               <div className="border-t border-amber-600/30 pt-4">
                 <h4 className="text-amber-400 font-semibold mb-2">Customer Information</h4>
                 <div className="grid grid-cols-2 gap-4">
@@ -412,12 +401,11 @@ const Order = () => {
                 </div>
               </div>
 
-              {/* Items */}
               <div className="border-t border-amber-600/30 pt-4">
                 <h4 className="text-amber-400 font-semibold mb-2">Order Items</h4>
                 <div className="space-y-2">
                   {selectedOrder.items?.map((itm, idx) => {
-                    const imageUrl = itm.item?.imageUrl ? `http://localhost:4000${itm.item.imageUrl}` : '';
+                    const imageUrl = buildImageUrl(itm.item?.imageUrl);
                     return (
                       <div key={idx} className="flex justify-between items-center p-2 rounded-lg bg-amber-900/20">
                         <div className="flex items-center gap-3">
@@ -445,7 +433,6 @@ const Order = () => {
                 </div>
               </div>
 
-              {/* Payment & Total */}
               <div className="border-t border-amber-600/30 pt-4">
                 <div className="flex justify-between items-center">
                   <div>
@@ -459,7 +446,6 @@ const Order = () => {
                 </div>
               </div>
 
-              {/* Payment Status and Action Buttons */}
               <div className="border-t border-amber-600/30 pt-4 flex gap-3">
                 {selectedOrder.paymentStatus !== 'completed' ? (
                   <button

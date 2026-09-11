@@ -1,26 +1,27 @@
 import userModel from "../modals/userModal.js";
-import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import validator from 'validator'
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import validator from 'validator';
 
+// Token now expires in 7 days
 const createToken = (id) => {
-    return jwt.sign({id}, process.env.JWT_SECRET_KEY)
-}
+    return jwt.sign({ id }, process.env.JWT_SECRET_KEY, { expiresIn: '7d' });
+};
 
 const loginUser = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
         let user;
-        
+
         if (email) {
             user = await userModel.findOne({ email });
         }
-        
+
         if (!user && username) {
             user = await userModel.findOne({ username });
         }
-        
+
         if (!user && req.body.username && req.body.username.includes('@')) {
             user = await userModel.findOne({ email: req.body.username });
         }
@@ -35,19 +36,19 @@ const loginUser = async (req, res) => {
         }
 
         const token = createToken(user._id);
-        
-        res.json({ 
-            success: true, 
-            token, 
+
+        res.json({
+            success: true,
+            token,
             isAdmin: user.isAdmin || false,
-            user: { id: user._id, username: user.username, email: user.email } 
+            user: { id: user._id, username: user.username, email: user.email }
         });
-    } 
+    }
     catch (error) {
         console.log(error);
         res.json({ success: false, message: "Server Error" });
     }
-}
+};
 
 const registerUser = async (req, res) => {
     const { username, password, email } = req.body;
@@ -75,47 +76,28 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = new userModel({
-            username: username,
-            email: email,
+            username,
+            email,
             password: hashedPassword,
-            isAdmin: false
+            isAdmin: false   // ✅ Always false for public signups
         });
 
         const user = await newUser.save();
 
         const token = createToken(user._id);
-        res.json({ success: true, token, user: { id: user._id, username: user.username, email: user.email } });
-    } 
+        res.json({
+            success: true,
+            token,
+            isAdmin: false,
+            user: { id: user._id, username: user.username, email: user.email }
+        });
+    }
     catch (error) {
         console.log(error);
         res.json({ success: false, message: "Server Error" });
     }
-}
-
-// TEMPORARY - Only for testing (remove before deployment)
-const createAdmin = async (req, res) => {
-    try {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash("Admin@123", salt);
-        
-        const adminExists = await userModel.findOne({ email: "admin@pzeleats.com" });
-        if (adminExists) {
-            return res.json({ success: false, message: "Admin already exists" });
-        }
-        
-        const admin = new userModel({
-            username: "pzel_admin",
-            email: "admin@pzeleats.com",
-            password: hashedPassword,
-            isAdmin: true
-        });
-        
-        await admin.save();
-        res.json({ success: true, message: "Admin created! Login with: admin@pzeleats.com / Admin@123" });
-    } catch (error) {
-        res.json({ success: false, message: error.message });
-    }
 };
 
-// ONLY ONE EXPORT STATEMENT - make sure there's only one of these
-export { loginUser, registerUser, createAdmin };
+// createAdmin has been REMOVED — admin creation now happens via scripts/seedAdmin.js
+
+export { loginUser, registerUser };

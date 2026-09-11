@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { FiPackage, FiTruck, FiCheckCircle, FiClock, FiRefreshCw, FiArrowLeft } from 'react-icons/fi'
 import io from 'socket.io-client'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const MyOrder = () => {
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
@@ -14,7 +16,7 @@ const MyOrder = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/api/orders', {
+            const response = await axios.get(`${API_URL}/api/orders`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             setOrders(response.data.orders || response.data)
@@ -34,10 +36,8 @@ const MyOrder = () => {
 
         fetchOrders()
 
-        // ✅ SOCKET: Connect to backend
-        const socket = io('http://localhost:4000')
+        const socket = io(API_URL)
 
-        // Listen for order updates
         socket.on('orderUpdated', (updatedOrder) => {
             console.log('Order updated via WebSocket:', updatedOrder)
             setOrders(prevOrders => 
@@ -85,6 +85,12 @@ const MyOrder = () => {
 
     const getPaymentStatusText = (paymentStatus) => {
         return paymentStatus === 'completed' ? 'Paid' : 'Pending'
+    }
+
+    // ✅ Helper: build image URL only if it's a relative path
+    const buildImageUrl = (imageUrl) => {
+        if (!imageUrl) return 'https://via.placeholder.com/48x48?text=No+Image';
+        return imageUrl.startsWith('http') ? imageUrl : `${API_URL}${imageUrl}`;
     }
 
     if (loading) {
@@ -166,7 +172,7 @@ const MyOrder = () => {
                                         <div key={idx} className="flex justify-between items-center">
                                             <div className="flex items-center gap-3">
                                                 <img 
-                                                    src={item.item?.imageUrl ? `http://localhost:4000${item.item.imageUrl}` : 'https://via.placeholder.com/48x48?text=No+Image'} 
+                                                    src={buildImageUrl(item.item?.imageUrl)} 
                                                     alt={item.item?.name || 'Item'} 
                                                     className="w-12 h-12 object-cover rounded-lg"
                                                     onError={(e) => {

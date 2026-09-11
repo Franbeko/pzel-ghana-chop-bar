@@ -2,14 +2,17 @@ import { useState } from "react";
 import { styles } from "../assets/dummyadmin";
 import { FiHeart, FiStar, FiUpload } from "react-icons/fi";
 import { Coin } from "phosphor-react";
-import axios from "axios"
+import axios from "axios";
+
+//Use env var — defaults to 127.0.0.1 (IPv4) instead of localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
 
 const AddItems = () => {
 
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    category: '',
+    categories: [],
     priceLRD: '',
     priceUSD: '',
     rating: 0,
@@ -31,6 +34,18 @@ const AddItems = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   }
 
+  const handleCategoryToggle = (category) => {
+    setFormData(prev => {
+      const alreadySelected = prev.categories.includes(category);
+      return {
+        ...prev,
+        categories: alreadySelected
+          ? prev.categories.filter(c => c !== category)
+          : [...prev.categories, category]
+      };
+    });
+  }
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -48,24 +63,36 @@ const AddItems = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.categories.length === 0) {
+      alert('Please select at least one category.');
+      return;
+    }
+
     try {
       const payload = new FormData();
       Object.entries(formData).forEach(([key, val]) => {
         if (key === 'preview') return;
+        if (key === 'categories') {
+          val.forEach(cat => payload.append('categories', cat));
+          return;
+        }
         payload.append(key, val);
       });
 
-      // ✅ UPDATED: Changed to relative path
-      await axios.post(
-        '/api/items',
+      // Full absolute URL — bypasses Vite proxy entirely
+      const res = await axios.post(
+        `${API_URL}/api/items`,
         payload,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      
+
+      console.log('Item added successfully:', res.data);
+
       setFormData({
         name: '',
         description: '',
-        category: '',
+        categories: [],
         priceLRD: '',
         priceUSD: '',
         rating: 0,
@@ -73,12 +100,22 @@ const AddItems = () => {
         total: 0,
         image: null,
         preview: ''
-      })
+      });
       alert('Item added successfully!');
     }
     catch (err) {
-      console.error('Error uploading items:', err.response || err.message);
-      alert('Failed to add item. Please try again.');
+      // Show the real error from the backend
+      const backendMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Unknown error';
+      console.error('Error uploading item:', {
+        status: err.response?.status,
+        message: backendMessage,
+        data: err.response?.data,
+      });
+      alert(`Failed to add item:\n\n${backendMessage}`);
     }
   }
 
@@ -132,19 +169,35 @@ const AddItems = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 text-base sm:text-lg text-amber-400 font-medium">Category</label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className={styles.inputField}
-                  required
-                >
-                  <option value="">Select Category</option>
-                  {categories.map(c => (
-                    <option key={c} value={c} className="bg-[#3a2b2b]">{c}</option>
-                  ))}
-                </select>
+                <label className="block mb-2 text-base sm:text-lg text-amber-400 font-medium">
+                  Categories <span className="text-xs text-amber-200/60">(select one or more)</span>
+                </label>
+                <div className="space-y-2 bg-[#3a2b2b] border border-amber-500/30 rounded-lg p-3">
+                  {categories.map(c => {
+                    const checked = formData.categories.includes(c);
+                    return (
+                      <label
+                        key={c}
+                        className={`flex items-center gap-3 cursor-pointer px-3 py-2 rounded-md transition-colors ${
+                          checked ? 'bg-amber-500/20 border border-amber-500/50' : 'hover:bg-amber-500/10'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => handleCategoryToggle(c)}
+                          className="w-4 h-4 accent-amber-500 cursor-pointer"
+                        />
+                        <span className="text-amber-100 text-sm sm:text-base">{c}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                {formData.categories.length > 0 && (
+                  <p className="mt-2 text-xs text-amber-300/80">
+                    Selected: {formData.categories.join(', ')}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -189,9 +242,9 @@ const AddItems = () => {
                 <label className="block mb-2 text-base sm:text-lg text-amber-400 font-medium">Rating</label>
                 <div className="flex gap-2">
                   {[1, 2, 3, 4, 5].map(star => (
-                    <button 
-                      key={star} 
-                      type="button" 
+                    <button
+                      key={star}
+                      type="button"
                       onClick={() => handleRating(star)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
@@ -210,22 +263,22 @@ const AddItems = () => {
               <div>
                 <label className="block mb-2 text-base sm:text-lg text-amber-400 font-medium">Popularity</label>
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={handleHearts}
                     className="text-2xl sm:text-3xl text-amber-400 hover:text-amber-300 transition-colors animate-pulse"
                   >
                     <FiHeart />
                   </button>
-                  <input 
-                    type="number" 
-                    name="hearts" 
-                    value={formData.hearts} 
-                    onChange={handleInputChange} 
-                    className={styles.inputField + ' pl-10 sm:pl-12 '} 
-                    placeholder="Enter Likes" 
+                  <input
+                    type="number"
+                    name="hearts"
+                    value={formData.hearts}
+                    onChange={handleInputChange}
+                    className={styles.inputField + ' pl-10 sm:pl-12 '}
+                    placeholder="Enter Likes"
                     min='0'
-                    required 
+                    required
                   />
                 </div>
               </div>
@@ -233,7 +286,7 @@ const AddItems = () => {
 
             <button type="submit" className={styles.actionBtn}>
               Add To Menu
-            </button>          
+            </button>
           </form>
         </div>
       </div>

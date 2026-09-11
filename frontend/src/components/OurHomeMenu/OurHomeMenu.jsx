@@ -6,6 +6,8 @@ import './OurHomeMenu.css'
 import axios from 'axios';
 import io from 'socket.io-client';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const categories = ['Daily Specials (Mon-Sat)', 'Sunday Specials', 'Rice Dishes', 'Drinks'];
 
 const OurHomeMenu = () => {
@@ -13,27 +15,36 @@ const OurHomeMenu = () => {
     const { cartItems, addToCart, removeFromCart, updateQuantity } = useCart();
     const [menuData, setMenuData] = useState({});
 
-    // Wrap fetchMenu in useCallback
+    const groupByCategories = (items) => {
+        return items.reduce((acc, item) => {
+            const cats = Array.isArray(item.categories) && item.categories.length
+                ? item.categories
+                : (item.category ? [item.category] : ['Uncategorized']);
+            cats.forEach(cat => {
+                acc[cat] = acc[cat] || [];
+                acc[cat].push(item);
+            });
+            return acc;
+        }, {});
+    };
+
     const fetchMenu = useCallback(async () => {
         try {
-            const res = await axios.get('http://localhost:4000/api/items');
-            const grouped = res.data.reduce((acc, item) => {
-                acc[item.category] = acc[item.category] || [];
-                acc[item.category].push(item);
-                return acc;
-            }, {});
-            setMenuData(grouped);
+            const res = await axios.get(`${API_URL}/api/items`);
+            setMenuData(groupByCategories(res.data));
         } catch (err) {
             console.error('Error fetching menu:', err);
         }
     }, []);
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        fetchMenu();
+        useEffect(() => {
+        // Await inside effect so linter sees async behavior
+        const loadMenu = async () => {
+            await fetchMenu();
+        };
+        loadMenu();
 
-        // Connect to WebSocket for real-time menu updates
-        const socket = io('http://localhost:4000', {
+        const socket = io(API_URL, {
             reconnection: true,
             reconnectionAttempts: 5,
         });
@@ -41,23 +52,26 @@ const OurHomeMenu = () => {
         socket.on('menuUpdated', (newItem) => {
             console.log('📡 Menu item added via WebSocket (OurHomeMenu):', newItem);
             setMenuData(prevData => {
-                const category = newItem.category || 'Uncategorized';
-                const updatedCategory = [...(prevData[category] || []), newItem];
-                return { ...prevData, [category]: updatedCategory };
+                const cats = Array.isArray(newItem.categories) && newItem.categories.length
+                    ? newItem.categories
+                    : (newItem.category ? [newItem.category] : ['Uncategorized']);
+                const updated = { ...prevData };
+                cats.forEach(cat => {
+                    updated[cat] = [...(updated[cat] || []), newItem];
+                });
+                return updated;
             });
         });
 
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [fetchMenu]);
 
-    // USE ID TO FIND AND UPDATE
     const getCartEntry = id => cartItems.find(ci => ci.item?._id === id);
     const getQuantity = id => getCartEntry(id)?.quantity || 0;
     const displayItems = (menuData[activeCategory] || []).slice(0, 4);
 
-    // Helper function to prepare item for cart
     const prepareCartItem = (item) => {
         return {
             _id: item._id,

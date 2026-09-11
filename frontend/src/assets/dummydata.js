@@ -5,21 +5,6 @@ import { FiUser, FiSmartphone, FiMail, FiHome } from 'react-icons/fi';
 import { FaUtensils } from 'react-icons/fa';
 import { GiFamilyHouse } from 'react-icons/gi';
 import { FaSeedling, FaUsers, FaAward } from 'react-icons/fa';
-// import IA1 from './IA1.png';
-// import IA2 from './IA2.png';
-// import IA3 from './IA3.png';
-// import IA4 from './IA4.png';
-// import IA5 from './IA5.png';
-// import IA6 from './IA6.png';
-
-import Fufu from "./Fufu.jpg";
-import Banku from "./Banku.png";
-import Banku2 from "./Banku-Tilapia.jpeg";
-import RiceBalls from "./RiceBalls.jpg";
-import GulabJamun from "./GulabJamun.png";
-import MasalaDosa from "./MasalaDosa.png";
-import PaneerTikka from "./PannerTikka.png";
-import PalakPaneer from "./PalakPaneer.png";
 
 import BannerImage from "./BannerImage.jpg";
 import Image1 from "./Image1.jpg";
@@ -131,16 +116,16 @@ export const aboutfeature = [
 
 // SPECIAL MENU
 export const cardData = [
-    { id: 1, title: 'Fufu & Light Soup', rating: 4.5, hearts: 105, description: 'Pounded cassava served with spicy light soup and goat meat.', image: Fufu, popular: true, price: 'LRD 40' },
-    { id: 2, title: 'Banku & Okro Soup', rating: 5.0, hearts: 155, description: 'Fermented corn dough served with fresh okro soup.', image: Banku, bestseller: true, price: 'LRD 140' },
-    { id: 3, title: 'Light Soup & Rice Balls', rating: 4.2, hearts: 85, description: 'Spicy tomato-based soup with tender meat.', image: RiceBalls, price: 'LRD 60' },
-    { id: 4, title: 'Banku & Tilapia', rating: 4.8, hearts: 285, description: 'Banku served with spicy pepper and grilled tilapia.', image: Banku2, special: true, price: 'LRD 200' },
+    // { id: 1, title: 'Fufu & Light Soup', rating: 4.5, hearts: 105, description: 'Pounded cassava served with spicy light soup and goat meat.', image: Fufu, popular: true, price: 'LRD 40' },
+    // { id: 2, title: 'Banku & Okro Soup', rating: 5.0, hearts: 155, description: 'Fermented corn dough served with fresh okro soup.', image: Banku, bestseller: true, price: 'LRD 140' },
+    // { id: 3, title: 'Light Soup & Rice Balls', rating: 4.2, hearts: 85, description: 'Spicy tomato-based soup with tender meat.', image: RiceBalls, price: 'LRD 60' },
+    // { id: 4, title: 'Banku & Tilapia', rating: 4.8, hearts: 285, description: 'Banku served with spicy pepper and grilled tilapia.', image: Banku2, special: true, price: 'LRD 200' },
 ];
 export const additionalData = [
-    { id: 5, title: 'Paneer Tikka', rating: 4.8, hearts: 210, description: 'Cottage cheese marinated in spices', image: PaneerTikka, popular: true, price: '₹220' },
-    { id: 6, title: 'Masala Dosa', rating: 4.5, hearts: 165, description: 'Crispy rice crepe with potato filling', image: MasalaDosa, price: '₹180' },
-    { id: 7, title: 'Palak Paneer', rating: 4.7, hearts: 190, description: 'Spinach curry with cottage cheese', image: PalakPaneer, price: '₹200' },
-    { id: 8, title: 'Gulab Jamun', rating: 4.9, hearts: 275, description: 'Golden dumplings in rose syrup', image: GulabJamun, special: true, price: '₹30' },
+    // { id: 5, title: 'Paneer Tikka', rating: 4.8, hearts: 210, description: 'Cottage cheese marinated in spices', image: PaneerTikka, popular: true, price: '₹220' },
+    // { id: 6, title: 'Masala Dosa', rating: 4.5, hearts: 165, description: 'Crispy rice crepe with potato filling', image: MasalaDosa, price: '₹180' },
+    // { id: 7, title: 'Palak Paneer', rating: 4.7, hearts: 190, description: 'Spinach curry with cottage cheese', image: PalakPaneer, price: '₹200' },
+    // { id: 8, title: 'Gulab Jamun', rating: 4.9, hearts: 275, description: 'Golden dumplings in rose syrup', image: GulabJamun, special: true, price: '₹30' },
 ];
 
 // FOOTER 

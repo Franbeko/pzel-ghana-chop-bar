@@ -2,7 +2,7 @@ import React from 'react'
 import { aboutfeature } from '../../assets/dummydata'
 import { Link } from 'react-router-dom'
 import { FaInfoCircle } from 'react-icons/fa'
-import AboutImage from '../../assets/AboutImage.png'
+import PzelImage from '../../assets/PzelImage.jpeg'
 import FloatingParticle from '../FloatingParticle/FloatingParticle'
 import './AboutHome.css'
 
@@ -63,7 +63,7 @@ const AboutHome = () => {
                 <div className='relative rounded-[2.5rem] overflow-hidden border-4 border-amber-900/30 hover:border-amber-600/40 transition
                 duration-500 shadow-2xl shadow-black/50'>
                     <div className='absolute inset-0 bg-gradient-to-br from-amber-400/15 via-transparent to-amber-600/10 mix-blend-light' />
-                    <img src={AboutImage} alt='Restaurant' className='w-full h-auto object-cover aspect-[3/4] transform
+                    <img src={PzelImage} alt='Restaurant' className='w-full h-auto object-cover aspect-[3/4] transform
                     -rotate-1 hover:rotate-0 transition-all duration-500 max-h-[400px]' />
                     <div className='absolute -bottom-12 left-1/2 -translate-x-1/2 w-4/5 h-16 bg-amber-900/30 blur-3xl z-0' />
                 </div>

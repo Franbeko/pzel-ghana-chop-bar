@@ -4,6 +4,8 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiCreditCard, FiUser, FiInfo } from 'react-icons/fi'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:4000';
+
 const Checkout = () => {
     const { cartItems, totalAmount, clearCart } = useCart()
     const navigate = useNavigate()
@@ -22,11 +24,9 @@ const Checkout = () => {
     const token = localStorage.getItem('authToken')
     const authHeaders = token ? { Authorization: `Bearer ${token}` } : {}
 
-    // Calculate tax (5%)
-    const taxRate = 0.05
+    // Tax removed — total = subtotal
     const subtotal = totalAmount || 0
-    const tax = subtotal * taxRate
-    const total = subtotal + tax
+    const total = subtotal
 
     // Check if selected payment method is Mobile Money
     const isMobileMoney = formData.paymentMethod === 'mtn_money' || formData.paymentMethod === 'orange_money'
@@ -43,7 +43,6 @@ const Checkout = () => {
             return
         }
 
-        // Validate transaction reference for Mobile Money
         if (isMobileMoney && !formData.transactionRef) {
             alert('Please enter your Mobile Money transaction reference number')
             return
@@ -72,13 +71,13 @@ const Checkout = () => {
             paymentMethod: formData.paymentMethod,
             transactionRef: formData.transactionRef,
             subtotal: subtotal,
-            tax: tax,
+            tax: 0,
             total: total,
             items: orderItems
         }
 
         try {
-            const response = await axios.post('http://localhost:4000/api/orders', orderData, { headers: authHeaders })
+            const response = await axios.post(`${API_URL}/api/orders`, orderData, { headers: authHeaders })
             
             if (response.data.success) {
                 alert('Order placed successfully!')
@@ -114,7 +113,6 @@ const Checkout = () => {
     return (
         <div className='min-h-screen bg-gradient-to-br from-[#1a120b] via-[#2a1e14] to-[#3e2b1d] py-12 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-7xl mx-auto'>
-                {/* Back to Cart Button */}
                 <button
                     onClick={() => navigate('/cart')}
                     className='mb-6 inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 transition-colors group'
@@ -176,7 +174,6 @@ const Checkout = () => {
                             <FiCreditCard className="text-amber-400" /> Payment Details
                         </h2>
 
-                        {/* Order Items */}
                         <div className='mb-4'>
                             <h3 className='text-lg font-semibold text-amber-300 mb-2'>Your Order Items</h3>
                             <div className='space-y-2 max-h-40 overflow-auto'>
@@ -192,15 +189,11 @@ const Checkout = () => {
                             </div>
                         </div>
 
-                        {/* Price Summary */}
+                        {/* ✅ Price Summary — tax removed */}
                         <div className='border-t border-amber-600/30 pt-4 space-y-2'>
                             <div className='flex justify-between text-amber-100/80'>
                                 <span>Subtotal:</span>
                                 <span>LRD {subtotal.toFixed(2)}</span>
-                            </div>
-                            <div className='flex justify-between text-amber-100/80'>
-                                <span>Tax (5%):</span>
-                                <span>LRD {tax.toFixed(2)}</span>
                             </div>
                             <div className='flex justify-between text-xl font-bold text-amber-100 pt-2 border-t border-amber-600/30'>
                                 <span>Total:</span>
@@ -223,7 +216,6 @@ const Checkout = () => {
                         {/* Mobile Money Note and Transaction Reference */}
                         {isMobileMoney && (
                             <div className='mt-4 space-y-4'>
-                                {/* Info Note */}
                                 <div className='bg-amber-900/20 border-l-4 border-amber-500 p-3 rounded-r-lg'>
                                     <div className='flex items-start gap-2'>
                                         <FiInfo className='text-amber-400 mt-0.5 flex-shrink-0' />
@@ -235,7 +227,6 @@ const Checkout = () => {
                                     </div>
                                 </div>
 
-                                {/* Transaction Reference Field */}
                                 <div>
                                     <label className='block text-amber-300 text-sm mb-1'>
                                         Transaction Reference Number
@@ -257,7 +248,6 @@ const Checkout = () => {
                             </div>
                         )}
 
-                        {/* Complete Order Button */}
                         <button
                             onClick={handleSubmit}
                             disabled={isLoading}

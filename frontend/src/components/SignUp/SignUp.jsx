@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { FaArrowLeft, FaCheckCircle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 
-const url = 'http://localhost:4000'
+// Use env variable (falls back to localhost for dev safety)
+const url = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 const AwesomeToast = ({ message, icon }) => {
   return (
@@ -38,11 +39,11 @@ const SignUp = () => {
   const toggleShowPassword = () => setShowPassword(prev => !prev);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const res = await axios.post(`${url}/api/user/register`, formData);
       console.log('Register Response:', res.data);
@@ -50,13 +51,15 @@ const SignUp = () => {
       if (res.data.success) {
         if (res.data.token) {
           localStorage.setItem('authToken', res.data.token);
+          // Ensure isAdmin is stored as false on signup
+          localStorage.setItem('isAdmin', 'false');
         }
         setToastMessage('Sign Up Successful!');
         setShowToast(true);
       } else {
         throw new Error(res.data.message || 'Registration failed');
       }
-    } 
+    }
     catch (err) {
       console.error('Registration Error', err);
       const msg = err.response?.data?.message || err.message || 'Failed to register';
@@ -71,41 +74,41 @@ const SignUp = () => {
       {showToast && <AwesomeToast message={toastMessage} icon={<FaCheckCircle />} />}
 
       <div className='w-full max-w-md bg-gradient-to-br from-[#2D1B0E] to-[#4a372a] p-8 rounded-xl shadow-lg border-4 border-amber-700/30 transform transition-all duration-300 hover:shadow-2xl'>
-        
+
         <h1 className='text-3xl font-bold text-center bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent mb-6 hover:scale-105 transition-transform'>
           Create Your Account
         </h1>
 
         <form onSubmit={handleSubmit} className='space-y-4'>
-          <input 
-            type="text" 
-            name='username' 
-            placeholder='Username' 
-            value={formData.username} 
-            onChange={handleChange} 
-            className='w-full px-4 py-3 rounded-lg bg-[#3a2518] text-amber-100 placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all duration-200 hover:scale-[1.02]' 
-            required 
+          <input
+            type="text"
+            name='username'
+            placeholder='Username'
+            value={formData.username}
+            onChange={handleChange}
+            className='w-full px-4 py-3 rounded-lg bg-[#3a2518] text-amber-100 placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all duration-200 hover:scale-[1.02]'
+            required
           />
 
-          <input 
-            type="email" 
-            name='email' 
-            placeholder='Email' 
-            value={formData.email} 
-            onChange={handleChange} 
-            className='w-full px-4 py-3 rounded-lg bg-[#3a2518] text-amber-100 placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all duration-200 hover:scale-[1.02]' 
-            required 
+          <input
+            type="email"
+            name='email'
+            placeholder='Email'
+            value={formData.email}
+            onChange={handleChange}
+            className='w-full px-4 py-3 rounded-lg bg-[#3a2518] text-amber-100 placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all duration-200 hover:scale-[1.02]'
+            required
           />
 
           <div className='relative'>
-            <input 
-              type={showPassword ? "text" : "password"} 
-              name='password' 
-              placeholder='Password' 
-              value={formData.password} 
-              onChange={handleChange} 
-              className='w-full px-4 py-3 rounded-lg bg-[#3a2518] text-amber-100 placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all duration-200 hover:scale-[1.02] pr-12' 
-              required 
+            <input
+              type={showPassword ? "text" : "password"}
+              name='password'
+              placeholder='Password'
+              value={formData.password}
+              onChange={handleChange}
+              className='w-full px-4 py-3 rounded-lg bg-[#3a2518] text-amber-100 placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-600 transition-all duration-200 hover:scale-[1.02] pr-12'
+              required
             />
             <button className='absolute inset-y-0 right-4 flex items-center text-amber-400 hover:text-amber-600 transition-all transform 
             hover:scale-125' type='button' onClick={toggleShowPassword}>
@@ -113,8 +116,8 @@ const SignUp = () => {
             </button>
           </div>
 
-          <button 
-            type='submit' 
+          <button
+            type='submit'
             disabled={isLoading}
             className='w-full py-3 bg-gradient-to-r from-amber-400 to-amber-600 text-[#2D1B0E] font-bold rounded-lg hover:scale-105 transition-transform duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
           >
