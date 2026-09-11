@@ -1,5 +1,10 @@
 import itemModal from "../modals/itemModal.js";
 
+// Public API base — used to build absolute image URLs
+// Hardcoded because behind Cloudflare/Dokploy, req.protocol returns 'http'
+// which causes mixed-content blocking in the browser.
+const PUBLIC_API_URL = 'https://api.pzelghanachopbar.com';
+
 export const createItem = async (req, res, next) => {
     try {
         const { name, description, priceLRD, priceUSD, rating, hearts } = req.body;
@@ -58,12 +63,34 @@ export const createItem = async (req, res, next) => {
 export const getItems = async (req, res, next) => {
     try {
         const items = await itemModal.find().sort({ createdAt: -1 });
-        const host = `${req.protocol}://${req.get('host')}`;
 
-        const withFullUrl = items.map(i => ({
-            ...i.toObject(),
-            imageUrl: i.imageUrl ? host + i.imageUrl : '',
-        }));
+        // Force HTTPS + public API domain for image URLs
+        // This avoids mixed-content blocking (frontend is HTTPS, image URLs were HTTP)
+        const withFullUrl = items.map(i => {
+            if (!i.imageUrl) {
+                return { ...i.toObject(), imageUrl: '' };
+            }
+
+            // If imageUrl is already an absolute URL (http:// or https://),
+            // extract only the path portion so we can reattach our HTTPS host.
+            const isAbsolute = /^https?:\/\//i.test(i.imageUrl);
+            let pathPart = i.imageUrl;
+
+            if (isAbsolute) {
+                try {
+                    pathPart = new URL(i.imageUrl).pathname;
+                } catch {
+                    // Fallback: strip protocol+host manually
+                    pathPart = i.imageUrl.replace(/^https?:\/\/[^/]+/i, '');
+                }
+            }
+
+            return {
+                ...i.toObject(),
+                imageUrl: `${PUBLIC_API_URL}${pathPart}`,
+            };
+        });
+
         res.json(withFullUrl);
     }
     catch (err) {
