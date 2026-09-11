@@ -17,11 +17,20 @@ const port = process.env.PORT || 4000;
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// ALLOWED ORIGINS — both local dev and production
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://pzelghanachopbar.com',
+    'https://www.pzelghanachopbar.com',
+    'https://admin.pzelghanachopbar.com',
+];
+
 // MIDDLEWARE
 app.use(cors({
     origin: (origin, callback) => {
-        const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
-        if(!origin || allowedOrigins.includes(origin)) {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true)
         } else {
             callback(new Error('Not allowed by CORS'))
@@ -30,7 +39,7 @@ app.use(cors({
     credentials: true,
 }))
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 // DATABASE
 connectDB();
@@ -50,7 +59,7 @@ app.get('/', (req, res) => {
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
     cors: {
-        origin: ['http://localhost:5173', 'http://localhost:5174'],
+        origin: allowedOrigins,
         credentials: true
     }
 })
@@ -58,7 +67,7 @@ const io = new Server(httpServer, {
 // SOCKET CONNECTION
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id)
-    
+
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id)
     })
